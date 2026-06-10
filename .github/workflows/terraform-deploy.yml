@@ -1,0 +1,222 @@
+###############################################################################
+# .github/workflows/terraform-deploy.yml
+# MSP ALZ — Terraform CI/CD Pipeline
+# Triggers on PR (plan only) and push to main (plan + apply).
+# Backend credentials are injected via GitHub environment secrets.
+#
+# Required Secrets (set per GitHub Environment):
+#   ARM_CLIENT_ID         — Service Principal App ID
+#   ARM_CLIENT_SECRET     — Service Principal Secret
+#   ARM_TENANT_ID         — Azure AD Tenant ID
+#   ARM_SUBSCRIPTION_ID   — Management subscription for backend state SA
+#   TF_STATE_RG           — Resource group name for state storage account
+#   TF_STATE_SA           — Storage account name for tfstate
+#   TF_STATE_CONTAINER    — Container name (typically 'tfstate')
+###############################################################################
+
+name: "Terraform — MSP ALZ Deploy"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**.tf"
+      - "**.tfvars"
+      - ".github/workflows/terraform-deploy.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**.tf"
+      - "**.tfvars"
+
+permissions:
+  contents: read
+  pull-requests: write  # Required to post plan output as PR comment
+
+env:
+  TF_VERSION: "1.7.5"
+  TF_LOG: "WARN"
+
+jobs:
+  ###########################################################################
+  # LINT — tflint + terraform fmt check
+  ###########################################################################
+  lint:
+    name: "Lint"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive -diff
+        working-directory: .
+
+      - name: Install tflint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: Run tflint
+        run: |
+          tflint --init
+          tflint --recursive
+
+  ###########################################################################
+  # PLAN — Matrix over all client/environment combinations
+  ###########################################################################
+  plan:
+    name: "Plan — ${{ matrix.client }}/${{ matrix.environment }}"
+    needs: lint
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.environment }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - client: client-a
+            environment: dev
+          - client: client-a
+            environment: prod
+          - client: client-b
+            environment: dev
+          - client: client-b
+            environment: prod
+
+    env:
+      ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      TF_WORKING_DIR:      "clients/${{ matrix.client }}/${{ matrix.environment }}"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ secrets.TF_STATE_RG }}" \
+            -backend-config="storage_account_name=${{ secrets.TF_STATE_SA }}" \
+            -backend-config="container_name=${{ secrets.TF_STATE_CONTAINER }}" \
+            -backend-config="key=${{ matrix.client }}/${{ matrix.environment }}/terraform.tfstate"
+
+      - name: Terraform Validate
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        env:
+          TF_VAR_deploy_timestamp: ${{ github.event.head_commit.timestamp }}
+        run: |
+          terraform plan \
+            -var-file="terraform.tfvars" \
+            -out=tfplan \
+            -no-color \
+            -detailed-exitcode
+        continue-on-error: true
+
+      - name: Post Plan to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output = `#### Terraform Plan — \`${{ matrix.client }}/${{ matrix.environment }}\`
+            \`\`\`\n${{ steps.plan.outputs.stdout }}\n\`\`\`
+            *Triggered by: @${{ github.actor }}, Workflow: \`${{ github.workflow }}\`*`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
+
+      - name: Fail on Plan Error
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-${{ matrix.client }}-${{ matrix.environment }}
+          path: ${{ env.TF_WORKING_DIR }}/tfplan
+          retention-days: 5
+
+  ###########################################################################
+  # APPLY — Only on push to main, requires plan artifact
+  ###########################################################################
+  apply:
+    name: "Apply — ${{ matrix.client }}/${{ matrix.environment }}"
+    needs: plan
+    runs-on: ubuntu-latest
+    environment: ${{ matrix.environment }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    strategy:
+      fail-fast: false
+      max-parallel: 1  # Prevent concurrent state locks
+      matrix:
+        include:
+          - client: client-a
+            environment: dev
+          - client: client-a
+            environment: prod
+          - client: client-b
+            environment: dev
+          - client: client-b
+            environment: prod
+
+    env:
+      ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      TF_WORKING_DIR:      "clients/${{ matrix.client }}/${{ matrix.environment }}"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Download Plan Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan-${{ matrix.client }}-${{ matrix.environment }}
+          path: ${{ env.TF_WORKING_DIR }}
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=${{ secrets.TF_STATE_RG }}" \
+            -backend-config="storage_account_name=${{ secrets.TF_STATE_SA }}" \
+            -backend-config="container_name=${{ secrets.TF_STATE_CONTAINER }}" \
+            -backend-config="key=${{ matrix.client }}/${{ matrix.environment }}/terraform.tfstate"
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        env:
+          TF_VAR_deploy_timestamp: ${{ github.event.head_commit.timestamp }}
+        run: terraform apply -auto-approve tfplan

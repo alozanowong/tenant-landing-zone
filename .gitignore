@@ -1,29 +1,45 @@
 # =============================================================================
-# Terraform Core Configuration[cite: 3]
+# Terraform
 # =============================================================================
+
+# Local .terraform directory (provider binaries, modules cache)
 **/.terraform/
+
+# Terraform lock file — commit this in application repos, but for a reusable
+# module/blueprint repo it's better to let consumers resolve their own versions
 .terraform.lock.hcl
+
+# State files — NEVER commit; contains plaintext secrets and resource IDs
 *.tfstate
 *.tfstate.*
 *.tfstate.backup
+
+# Plan output files — may contain sensitive values in plaintext
 *.tfplan
 tfplan
 plan.out
+
+# Crash log
 crash.log
 crash.*.log
 
-# Overrides & Private Configurations[cite: 3]
+# Override files — local developer experiments, never shared
 override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# Backend configuration files — contain storage account keys or SAS tokens
 backend.hcl
 backend.tfvars
+
+# Auto-loaded variable files — risk of committing real credentials
 *.auto.tfvars
 
 # =============================================================================
-# Credentials & Security Blocks[cite: 3]
+# Credentials & Secrets — Hard block on any of these reaching version control
 # =============================================================================
+
 *.pem
 *.key
 *.p12
@@ -37,18 +53,30 @@ backend.tfvars
 .env
 .env.*
 !.env.example
+
+# Azure CLI session artifacts
 .azure/
+
+# Service principal credential files
 sp-credentials.json
 arm-credentials.json
 
 # =============================================================================
-# IDE, OS, & Temporary Garbage[cite: 3]
+# IDE & Editor
 # =============================================================================
+
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.DS_Store
+Thumbs.db
+
+# =============================================================================
+# OS
+# =============================================================================
+
 .DS_Store
 .DS_Store?
 ._*
@@ -56,6 +84,11 @@ arm-credentials.json
 .Trashes
 ehthumbs.db
 Desktop.ini
+
+# =============================================================================
+# CI/CD local artifacts
+# =============================================================================
+
 .cache/
 tmp/
 temp/
