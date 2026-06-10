@@ -1,0 +1,61 @@
+# =============================================================================
+# Terraform Core Configuration[cite: 3]
+# =============================================================================
+**/.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+*.tfplan
+tfplan
+plan.out
+crash.log
+crash.*.log
+
+# Overrides & Private Configurations[cite: 3]
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+backend.hcl
+backend.tfvars
+*.auto.tfvars
+
+# =============================================================================
+# Credentials & Security Blocks[cite: 3]
+# =============================================================================
+*.pem
+*.key
+*.p12
+*.pfx
+*.cer
+*.crt
+*_rsa
+*_rsa.pub
+*credentials*
+*secrets*
+.env
+.env.*
+!.env.example
+.azure/
+sp-credentials.json
+arm-credentials.json
+
+# =============================================================================
+# IDE, OS, & Temporary Garbage[cite: 3]
+# =============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+.cache/
+tmp/
+temp/
