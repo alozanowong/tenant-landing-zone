@@ -2,7 +2,8 @@
 
 [![Terraform](https://img.shields.io/badge/Terraform-≥1.5-623CE4?logo=terraform)](https://www.terraform.io)
 [![AzureRM](https://img.shields.io/badge/AzureRM-≥3.90-0078D4?logo=microsoft-azure)](https://registry.terraform.io/providers/hashicorp/azurerm)
-[![CI](https://github.com/your-org/msp-azure-landing-zone/actions/workflows/terraform-deploy.yml/badge.svg)](https://github.com/your-org/msp-azure-landing-zone/actions)
+[![CI/CD Pipeline](https://github.com/alozanowong/tenant-landing-zone/actions/workflows/terraform-deploy.yml/badge.svg)](https://github.com/alozanowong/tenant-landing-zone/actions)
+(https://github.com/your-org/msp-azure-landing-zone/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A production-grade Terraform repository enabling Managed Service Providers (MSPs) to rapidly vend standardized, secure, multi-tenant Azure Landing Zones aligned to the **Microsoft Cloud Adoption Framework (CAF)**. Each client receives an isolated Hub-and-Spoke topology, enterprise governance guardrails, and a dedicated Management Group hierarchy — deployed repeatably through a modular, DRY configuration pattern.
