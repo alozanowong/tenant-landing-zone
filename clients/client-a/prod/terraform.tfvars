@@ -6,10 +6,10 @@
 ###############################################################################
 
 # ── Identity & Tenant ─────────────────────────────────────────────────────────
-tenant_id                  = "00000000-0000-0000-0000-000000000001"  # Contoso MSP Tenant
-hub_subscription_id        = "11111111-0000-0000-0000-000000000001"  # MSP Hub Subscription
-management_subscription_id = "22222222-0000-0000-0000-000000000001"  # MSP Management Subscription
-client_subscription_id     = "33333333-0000-0000-0000-000000000001"  # Client A Production
+tenant_id                  = "00000000-0000-0000-0000-000000000001" # Contoso MSP Tenant
+hub_subscription_id        = "11111111-0000-0000-0000-000000000001" # MSP Hub Subscription
+management_subscription_id = "22222222-0000-0000-0000-000000000001" # MSP Management Subscription
+client_subscription_id     = "33333333-0000-0000-0000-000000000001" # Client A Production
 
 # ── Client Metadata ───────────────────────────────────────────────────────────
 client_name         = "acmecorp"
@@ -41,7 +41,7 @@ spoke_vnet_config = {
 
 # ── Governance ────────────────────────────────────────────────────────────────
 management_group_parent_id = "/providers/Microsoft.Management/managementGroups/mg-msp-clients"
-policy_enforcement_mode    = "Default"  # Enforced in production
+policy_enforcement_mode    = "Default" # Enforced in production
 
 allowed_vm_skus = [
   "Standard_D4s_v5",

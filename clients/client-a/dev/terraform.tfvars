@@ -7,7 +7,7 @@
 tenant_id                  = "00000000-0000-0000-0000-000000000001"
 hub_subscription_id        = "11111111-0000-0000-0000-000000000001"
 management_subscription_id = "22222222-0000-0000-0000-000000000001"
-client_subscription_id     = "44444444-0000-0000-0000-000000000001"  # Client A Dev
+client_subscription_id     = "44444444-0000-0000-0000-000000000001" # Client A Dev
 
 client_name         = "acmecorp"
 client_display_name = "Acme Corporation"
@@ -34,7 +34,7 @@ spoke_vnet_config = {
 }
 
 management_group_parent_id = "/providers/Microsoft.Management/managementGroups/mg-msp-clients"
-policy_enforcement_mode    = "DoNotEnforce"  # Audit-only in dev
+policy_enforcement_mode    = "DoNotEnforce" # Audit-only in dev
 
 allowed_vm_skus = [
   "Standard_B2s",
@@ -44,7 +44,7 @@ allowed_vm_skus = [
 ]
 
 log_analytics_retention_days = 30
-enable_defender_for_cloud    = false  # Cost optimization in dev
+enable_defender_for_cloud    = false # Cost optimization in dev
 
 global_tags = {
   Client      = "Acme Corporation"

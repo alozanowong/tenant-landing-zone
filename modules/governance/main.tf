@@ -14,8 +14,8 @@
 ###############################################################################
 
 resource "azurerm_management_group" "client" {
-  name         = var.management_group_name
-  display_name = "${var.client_display_name} — ${upper(var.environment)}"
+  name                       = var.management_group_name
+  display_name               = "${var.client_display_name} — ${upper(var.environment)}"
   parent_management_group_id = var.management_group_parent_id
 }
 
@@ -104,9 +104,9 @@ resource "azurerm_policy_definition" "require_tags" {
         {
           anyOf = [
             { field = "tags['Environment']", exists = "false" },
-            { field = "tags['CostCenter']",  exists = "false" },
-            { field = "tags['Owner']",        exists = "false" },
-            { field = "tags['ManagedBy']",    exists = "false" }
+            { field = "tags['CostCenter']", exists = "false" },
+            { field = "tags['Owner']", exists = "false" },
+            { field = "tags['ManagedBy']", exists = "false" }
           ]
         }
       ]
@@ -118,8 +118,8 @@ resource "azurerm_policy_definition" "require_tags" {
 
   parameters = jsonencode({
     effect = {
-      type         = "String"
-      defaultValue = "Deny"
+      type          = "String"
+      defaultValue  = "Deny"
       allowedValues = ["Deny", "Audit", "Disabled"]
       metadata = {
         displayName = "Effect"
@@ -159,8 +159,8 @@ resource "azurerm_policy_definition" "deny_public_ip" {
 
   parameters = jsonencode({
     effect = {
-      type         = "String"
-      defaultValue = "Deny"
+      type          = "String"
+      defaultValue  = "Deny"
       allowedValues = ["Deny", "Audit", "Disabled"]
       metadata = {
         displayName = "Effect"
@@ -217,8 +217,8 @@ resource "azurerm_policy_definition" "allowed_vm_skus" {
       }
     }
     effect = {
-      type         = "String"
-      defaultValue = "Deny"
+      type          = "String"
+      defaultValue  = "Deny"
       allowedValues = ["Deny", "Audit", "Disabled"]
       metadata = {
         displayName = "Effect"
@@ -264,7 +264,7 @@ resource "azurerm_policy_definition" "enable_defender" {
         ]
         deployment = {
           properties = {
-            mode     = "incremental"
+            mode = "incremental"
             template = {
               "$schema"      = "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#"
               contentVersion = "1.0.0.0"
@@ -388,7 +388,7 @@ resource "azurerm_management_group_policy_assignment" "msp_baseline" {
 
   location = var.primary_location
 
-  not_scopes = []  # Populate with Hub subscription IDs to exempt Firewall/Bastion PIPs
+  not_scopes = [] # Populate with Hub subscription IDs to exempt Firewall/Bastion PIPs
 
   depends_on = [azurerm_policy_set_definition.msp_baseline]
 }

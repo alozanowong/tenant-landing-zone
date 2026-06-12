@@ -27,7 +27,7 @@ resource "azurerm_virtual_network" "hub" {
   resource_group_name = azurerm_resource_group.networking.name
   location            = azurerm_resource_group.networking.location
   address_space       = var.address_space
-  dns_servers         = []  # Azure Firewall DNAT handles DNS forwarding
+  dns_servers         = [] # Azure Firewall DNAT handles DNS forwarding
 
   tags = var.tags
 }
@@ -35,7 +35,7 @@ resource "azurerm_virtual_network" "hub" {
 resource "azurerm_subnet" "firewall" {
   count = var.mode == "hub" ? 1 : 0
 
-  name                 = "AzureFirewallSubnet"  # Name is immutable per Azure requirement
+  name                 = "AzureFirewallSubnet" # Name is immutable per Azure requirement
   resource_group_name  = azurerm_resource_group.networking.name
   virtual_network_name = azurerm_virtual_network.hub[0].name
   address_prefixes     = [var.firewall_subnet_prefix]
@@ -44,7 +44,7 @@ resource "azurerm_subnet" "firewall" {
 resource "azurerm_subnet" "bastion" {
   count = var.mode == "hub" ? 1 : 0
 
-  name                 = "AzureBastionSubnet"  # Name is immutable per Azure requirement
+  name                 = "AzureBastionSubnet" # Name is immutable per Azure requirement
   resource_group_name  = azurerm_resource_group.networking.name
   virtual_network_name = azurerm_virtual_network.hub[0].name
   address_prefixes     = [var.bastion_subnet_prefix]
@@ -53,7 +53,7 @@ resource "azurerm_subnet" "bastion" {
 resource "azurerm_subnet" "gateway" {
   count = var.mode == "hub" ? 1 : 0
 
-  name                 = "GatewaySubnet"  # Name is immutable per Azure requirement
+  name                 = "GatewaySubnet" # Name is immutable per Azure requirement
   resource_group_name  = azurerm_resource_group.networking.name
   virtual_network_name = azurerm_virtual_network.hub[0].name
   address_prefixes     = [var.gateway_subnet_prefix]
@@ -80,21 +80,21 @@ resource "azurerm_public_ip" "firewall" {
   location            = azurerm_resource_group.networking.location
   allocation_method   = "Static"
   sku                 = "Standard"
-  zones               = ["1", "2", "3"]  # Zone-redundant for HA
+  zones               = ["1", "2", "3"] # Zone-redundant for HA
   tags                = var.tags
 }
 
 resource "azurerm_firewall_policy" "hub" {
   count = var.mode == "hub" ? 1 : 0
 
-  name                = "${var.firewall_name}-policy"
-  resource_group_name = azurerm_resource_group.networking.name
-  location            = azurerm_resource_group.networking.location
-  sku                 = "Standard"
+  name                     = "${var.firewall_name}-policy"
+  resource_group_name      = azurerm_resource_group.networking.name
+  location                 = azurerm_resource_group.networking.location
+  sku                      = "Standard"
   threat_intelligence_mode = "Alert"
 
   dns {
-    proxy_enabled = true  # Required for FQDN-based network rules
+    proxy_enabled = true # Required for FQDN-based network rules
   }
 
   insights {
@@ -123,7 +123,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "baseline" {
       name                  = "allow-dns-udp"
       protocols             = ["UDP"]
       source_addresses      = ["*"]
-      destination_addresses = ["168.63.129.16"]  # Azure DNS
+      destination_addresses = ["168.63.129.16"] # Azure DNS
       destination_ports     = ["53"]
     }
 
@@ -142,11 +142,11 @@ resource "azurerm_firewall_policy_rule_collection_group" "baseline" {
     action   = "Allow"
 
     rule {
-      name                  = "allow-log-analytics"
-      protocols             = ["TCP"]
-      source_addresses      = ["*"]
-      destination_fqdns     = ["*.ods.opinsights.azure.com", "*.oms.opinsights.azure.com"]
-      destination_ports     = ["443"]
+      name              = "allow-log-analytics"
+      protocols         = ["TCP"]
+      source_addresses  = ["*"]
+      destination_fqdns = ["*.ods.opinsights.azure.com", "*.oms.opinsights.azure.com"]
+      destination_ports = ["443"]
     }
   }
 
@@ -229,13 +229,13 @@ resource "azurerm_public_ip" "bastion" {
 resource "azurerm_bastion_host" "hub" {
   count = var.mode == "hub" ? 1 : 0
 
-  name                = var.bastion_name
-  resource_group_name = azurerm_resource_group.networking.name
-  location            = azurerm_resource_group.networking.location
-  sku                 = "Standard"
-  tunneling_enabled   = true  # Enables SSH/RDP native client tunneling
-  copy_paste_enabled  = true
-  file_copy_enabled   = true
+  name                   = var.bastion_name
+  resource_group_name    = azurerm_resource_group.networking.name
+  location               = azurerm_resource_group.networking.location
+  sku                    = "Standard"
+  tunneling_enabled      = true # Enables SSH/RDP native client tunneling
+  copy_paste_enabled     = true
+  file_copy_enabled      = true
   shareable_link_enabled = false
 
   ip_configuration {
@@ -280,7 +280,7 @@ resource "azurerm_virtual_network" "spoke" {
   resource_group_name = azurerm_resource_group.networking.name
   location            = azurerm_resource_group.networking.location
   address_space       = var.address_space
-  dns_servers         = [var.hub_firewall_private_ip]  # Route DNS through Firewall proxy
+  dns_servers         = [var.hub_firewall_private_ip] # Route DNS through Firewall proxy
 
   tags = var.tags
 }
@@ -366,7 +366,7 @@ resource "azurerm_network_security_group" "workload" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_ranges    = ["22", "3389"]
-    source_address_prefix      = "VirtualNetwork"  # Bastion operates within VNet space
+    source_address_prefix      = "VirtualNetwork" # Bastion operates within VNet space
     destination_address_prefix = "*"
     description                = "Allow SSH/RDP only from Bastion subnet via VNet peering"
   }
@@ -434,7 +434,7 @@ resource "azurerm_route_table" "spoke" {
   name                          = "rt-${var.vnet_name}-spoke"
   resource_group_name           = azurerm_resource_group.networking.name
   location                      = azurerm_resource_group.networking.location
-  disable_bgp_route_propagation = true  # Prevent on-prem routes overriding UDRs
+  disable_bgp_route_propagation = true # Prevent on-prem routes overriding UDRs
 
   route {
     name                   = "udr-default-to-firewall"
@@ -475,7 +475,7 @@ resource "azurerm_virtual_network_peering" "spoke_to_hub" {
   allow_virtual_network_access = true
   allow_forwarded_traffic      = true
   allow_gateway_transit        = false
-  use_remote_gateways          = true  # Use Hub's VPN/ExpressRoute gateway
+  use_remote_gateways          = true # Use Hub's VPN/ExpressRoute gateway
 }
 
 # Hub → Spoke (created in Hub context — requires provider alias override at root)

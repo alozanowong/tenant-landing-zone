@@ -33,11 +33,11 @@ locals {
   ###########################################################################
   # Resource Group Names
   ###########################################################################
-  rg_hub_networking    = "${local.name_prefix}-rg-hub-network"
-  rg_spoke_networking  = "${local.name_prefix}-rg-spoke-network"
-  rg_management        = "${local.name_prefix}-rg-management"
-  rg_governance        = "${local.name_prefix}-rg-governance"
-  rg_identity          = "${local.name_prefix}-rg-identity"
+  rg_hub_networking   = "${local.name_prefix}-rg-hub-network"
+  rg_spoke_networking = "${local.name_prefix}-rg-spoke-network"
+  rg_management       = "${local.name_prefix}-rg-management"
+  rg_governance       = "${local.name_prefix}-rg-governance"
+  rg_identity         = "${local.name_prefix}-rg-identity"
 
   ###########################################################################
   # Network Resource Names

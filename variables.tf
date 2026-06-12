@@ -124,10 +124,10 @@ variable "secondary_location" {
 
 variable "hub_vnet_config" {
   type = object({
-    address_space           = list(string)
-    firewall_subnet_prefix  = string
-    bastion_subnet_prefix   = string
-    gateway_subnet_prefix   = string
+    address_space            = list(string)
+    firewall_subnet_prefix   = string
+    bastion_subnet_prefix    = string
+    gateway_subnet_prefix    = string
     management_subnet_prefix = string
   })
   description = <<-EOT
@@ -251,5 +251,5 @@ variable "deploy_timestamp" {
     In CI: set via TF_VAR_deploy_timestamp=$(date -u +%Y-%m-%dT%H:%M:%SZ)
     For local runs the default value is used and no diff is produced.
   EOT
-  default = "local-run"
+  default     = "local-run"
 }
