@@ -2,7 +2,7 @@
 
 [![Terraform](https://img.shields.io/badge/Terraform-≥1.5-623CE4?logo=terraform)](https://www.terraform.io)
 [![AzureRM](https://img.shields.io/badge/AzureRM-≥3.90-0078D4?logo=microsoft-azure)](https://registry.terraform.io/providers/hashicorp/azurerm)
-[![CI/CD Pipeline](https://github.com/alozanowong/tenant-landing-zone/actions/workflows/terraform-deploy.yml/badge.svg)](https://github.com/alozanowong/tenant-landing-zone/actions)
+[![CI/CD Pipeline](https://github.com/alozanowong/tenant-landing-zone/actions/workflows/terraform-deploy.yml/badge.svg)]
 (https://github.com/your-org/msp-azure-landing-zone/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
