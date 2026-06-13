@@ -102,7 +102,7 @@ jobs:
       ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      TF_WORKING_DIR:      "clients/${{ matrix.client }}/${{ matrix.environment }}"
+      TF_WORKING_DIR:      "."
 
     steps:
       - name: Checkout
@@ -190,7 +190,7 @@ jobs:
       ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      TF_WORKING_DIR:      "clients/${{ matrix.client }}/${{ matrix.environment }}"
+      TF_WORKING_DIR:      "."
 
     steps:
       - name: Checkout
@@ -216,4 +216,5 @@ jobs:
         env:
           TF_VAR_deploy_timestamp: ${{ github.event.head_commit.timestamp }}
         run: terraform apply -auto-approve tfplan
+
 
