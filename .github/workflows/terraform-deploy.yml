@@ -115,12 +115,7 @@ jobs:
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: |
-          terraform init \
-            -backend-config="resource_group_name=${{ secrets.TF_STATE_RG }}" \
-            -backend-config="storage_account_name=${{ secrets.TF_STATE_SA }}" \
-            -backend-config="container_name=${{ secrets.TF_STATE_CONTAINER }}" \
-            -backend-config="key=${{ matrix.client }}/${{ matrix.environment }}/terraform.tfstate"
+        run: terraform init -backend=false -get=true
 
       - name: Terraform Validate
         working-directory: ${{ env.TF_WORKING_DIR }}
@@ -214,15 +209,11 @@ jobs:
 
       - name: Terraform Init
         working-directory: ${{ env.TF_WORKING_DIR }}
-        run: |
-          terraform init \
-            -backend-config="resource_group_name=${{ secrets.TF_STATE_RG }}" \
-            -backend-config="storage_account_name=${{ secrets.TF_STATE_SA }}" \
-            -backend-config="container_name=${{ secrets.TF_STATE_CONTAINER }}" \
-            -backend-config="key=${{ matrix.client }}/${{ matrix.environment }}/terraform.tfstate"
+        run: terraform init -backend=false -get=true
 
       - name: Terraform Apply
         working-directory: ${{ env.TF_WORKING_DIR }}
         env:
           TF_VAR_deploy_timestamp: ${{ github.event.head_commit.timestamp }}
         run: terraform apply -auto-approve tfplan
+
