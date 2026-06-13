@@ -3,6 +3,22 @@
 # MSP Azure Landing Zone — Root Module Orchestration
 # Calls governance, networking, identity, and monitoring modules in dependency order.
 ###############################################################################
+# Variable declarations for required inputs referenced in this root module
+variable "msp_security_team_group_id" {
+  description = "Object ID or group ID for the MSP security team in Azure AD."
+  type        = string
+}
+
+variable "msp_platform_team_group_id" {
+  description = "Object ID or group ID for the MSP platform team in Azure AD."
+  type        = string
+}
+
+variable "client_admin_group_id" {
+  description = "Object ID or group ID for the client administration group in Azure AD."
+  type        = string
+}
+
 
 ###############################################################################
 # GOVERNANCE — Management Groups, Policies, RBAC
