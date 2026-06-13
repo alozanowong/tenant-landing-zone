@@ -378,7 +378,7 @@ resource "azurerm_management_group_policy_assignment" "msp_baseline" {
   display_name         = "[MSP] Baseline Guardrails — ${var.client_display_name}"
   policy_definition_id = azurerm_policy_set_definition.msp_baseline.id
   management_group_id  = azurerm_management_group.client.id
-  enforcement_mode     = var.policy_enforcement_mode
+  enforce              = var.policy_enforcement_mode == "Default" ? true : false
   description          = "Assigns the MSP Baseline Guardrail initiative to the ${var.client_display_name} Management Group. Enforced in production; audit-only in dev/staging."
 
   # System-assigned managed identity required for DeployIfNotExists policies
@@ -430,3 +430,4 @@ resource "azurerm_role_assignment" "policy_remediation" {
 
   depends_on = [azurerm_management_group_policy_assignment.msp_baseline]
 }
+
