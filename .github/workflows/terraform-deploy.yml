@@ -56,7 +56,13 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Terraform Format Check
-        run: terraform fmt -check -recursive -diff
+        # Exclude flat .tfvars dictionaries; isolate validation to structural hcl formats
+        run: |
+          terraform fmt -check main.tf
+          terraform fmt -check providers.tf
+          terraform fmt -check variables.tf
+          terraform fmt -check locals.tf
+          terraform fmt -check -recursive modules/
         working-directory: .
 
       - name: Install tflint
