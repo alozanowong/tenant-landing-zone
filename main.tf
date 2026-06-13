@@ -26,6 +26,9 @@ module "governance" {
   secondary_location         = var.secondary_location
   policy_enforcement_mode    = var.policy_enforcement_mode
   allowed_vm_skus            = var.allowed_vm_skus
+  msp_security_team_group_id = var.msp_security_team_group_id
+  msp_platform_team_group_id = var.msp_platform_team_group_id
+  client_admin_group_id      = var.client_admin_group_id
   log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
   tags                       = local.mandatory_tags
 }
