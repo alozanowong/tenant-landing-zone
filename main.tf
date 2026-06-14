@@ -19,6 +19,9 @@ variable "client_admin_group_id" {
   type        = string
 }
 
+locals {
+  rg_hub_networking = format("%s-hub-networking-rg", var.client_name)
+}
 
 ###############################################################################
 # GOVERNANCE — Management Groups, Policies, RBAC
