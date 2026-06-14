@@ -127,6 +127,9 @@ module "identity" {
   environment         = var.environment
   management_group_id = module.governance.management_group_id
   spoke_vnet_id       = module.spoke_networking.vnet_id
+  
+  # FIX: Pass the required subscription context to the identity module
+  client_subscription_id = var.client_subscription_id
 
   providers = {
     azurerm = azurerm.workload
