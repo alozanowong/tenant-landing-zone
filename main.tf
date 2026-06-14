@@ -50,7 +50,7 @@ module "governance" {
   policy_enforcement_mode    = var.policy_enforcement_mode
   allowed_vm_skus            = var.allowed_vm_skus
   
-  # Map variables to match child module constraints exactly
+  # FIX: Exact input parameter match for the governance child module variables
   environment                = var.environment
   management_group_name      = format("mg-%s-%s", var.client_name, var.environment)
   client_subscription_id     = var.client_subscription_id
@@ -101,6 +101,7 @@ module "spoke_networking" {
   hub_vnet_id              = module.hub_networking.vnet_id
   hub_firewall_private_ip  = module.hub_networking.firewall_private_ip
 
+  # FIX: Exact input parameter match for the networking child module variables
   vnet_name                  = format("%s-%s-spoke-vnet", var.client_name, var.environment)
   resource_group_name        = local.rg_spoke_networking
   log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
