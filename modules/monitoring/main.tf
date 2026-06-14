@@ -5,6 +5,16 @@
 # Defender for Cloud contact settings, and auto-provisioning.
 ###############################################################################
 
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 3.90.0, < 4.0.0"
+    }
+  }
+}
+
 resource "azurerm_resource_group" "management" {
   name     = var.resource_group_name
   location = var.location
