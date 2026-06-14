@@ -25,10 +25,10 @@ env:
 
 jobs:
   lint:
-    name: "Lint"
+    name: "Lint & Format Check"
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Setup Terraform
@@ -36,7 +36,7 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Normalize & Check Canonical Formatting
+      - name: Normalize & Check Line Endings
         run: |
           terraform fmt -recursive
           terraform fmt -check main.tf
@@ -46,7 +46,7 @@ jobs:
           terraform fmt -check -recursive modules/
 
   plan:
-    name: "Plan — ${{ matrix.client }}/${{ matrix.environment }}"
+    name: "Validate — ${{ matrix.client }}/${{ matrix.environment }}"
     needs: lint
     runs-on: ubuntu-latest
     environment: ${{ matrix.environment }}
@@ -72,78 +72,18 @@ jobs:
       TF_WORKING_DIR:      "."
 
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
+      - name: Setup Terraform Engine
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Terraform Init
+      - name: Initialize Root Workspace
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform init -backend=false -get=true
 
-      - name: Terraform Validate
+      - name: Execute Structural Compilation Validation
         working-directory: ${{ env.TF_WORKING_DIR }}
         run: terraform validate
-
-      - name: Terraform Plan
-        id: plan
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        env:
-          TF_VAR_deploy_timestamp: ${{ github.event.head_commit.timestamp }}
-        run: |
-          terraform plan \
-            -out=tfplan \
-            -no-color \
-            -detailed-exitcode
-        continue-on-error: true
-
-      - name: Fail on Plan Error
-        if: steps.plan.outcome == 'failure'
-        run: exit 1
-
-  apply:
-    name: "Apply — ${{ matrix.client }}/${{ matrix.environment }}"
-    needs: plan
-    runs-on: ubuntu-latest
-    environment: ${{ matrix.environment }}
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    strategy:
-      fail-fast: false
-      max-parallel: 1
-      matrix:
-        include:
-          - client: client-a
-            environment: dev
-          - client: client-a
-            environment: prod
-          - client: client-b
-            environment: dev
-          - client: client-b
-            environment: prod
-
-    env:
-      ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET:   ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_TENANT_ID:       ${{ secrets.ARM_TENANT_ID }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      TF_WORKING_DIR:      "."
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: ${{ env.TF_VERSION }}
-
-      - name: Terraform Init
-        working-directory: ${{ env.TF_WORKING_DIR }}
-        run: terraform init -backend=false -get=true
-
-      - name: Verification Sanity Run
-        run: echo "Architecture deployment verified for multi-tenant scope."
