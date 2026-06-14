@@ -77,6 +77,18 @@ variable "environment" {
   }
 }
 
+variable "retention_days" {
+  type        = number
+  description = "[DEPRECATED: Use log_analytics_retention_days] Alias for backward compatibility with module calls."
+  default     = null
+}
+
+variable "enable_defender" {
+  type        = bool
+  description = "[DEPRECATED: Use enable_defender_for_cloud] Alias for backward compatibility with module calls."
+  default     = null
+}
+
 variable "owner_email" {
   type        = string
   description = "Email address of the primary technical owner for this client landing zone. Used in mandatory resource tags."
@@ -95,6 +107,22 @@ variable "cost_center" {
 ###############################################################################
 # REGIONAL CONFIGURATION
 ###############################################################################
+
+variable "location" {
+  type        = string
+  description = "Primary Azure region for all client resources (e.g., 'eastus2'). Must be in the MSP-approved region list enforced by Azure Policy."
+  default     = "eastus2"
+
+  validation {
+    condition = contains([
+      "eastus", "eastus2", "westus2", "westus3",
+      "centralus", "northcentralus", "southcentralus",
+      "westeurope", "northeurope", "uksouth", "ukwest",
+      "australiaeast", "southeastasia"
+    ], var.location)
+    error_message = "location must be an MSP-approved Azure region."
+  }
+}
 
 variable "primary_location" {
   type        = string

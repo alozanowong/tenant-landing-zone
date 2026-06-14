@@ -37,6 +37,7 @@ locals {
   rg_hub_networking   = "${local.name_prefix}-rg-hub-network"
   rg_spoke_networking = "${local.name_prefix}-rg-spoke-network"
   rg_management       = "${local.name_prefix}-rg-management"
+  rg_monitoring       = "${local.name_prefix}-rg-management" # Monitoring resources share management RG
   rg_governance       = "${local.name_prefix}-rg-governance"
   rg_identity         = "${local.name_prefix}-rg-identity"
 

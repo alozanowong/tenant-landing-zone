@@ -5,6 +5,20 @@
 # on the client spoke subscription.
 ###############################################################################
 
+terraform {
+  required_version = ">= 1.5.0"
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = ">= 3.90.0, < 4.0.0"
+    }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = ">= 2.47.0, < 3.0.0"
+    }
+  }
+}
+
 ###############################################################################
 # AZURE AD GROUPS — Client-Scoped
 ###############################################################################
