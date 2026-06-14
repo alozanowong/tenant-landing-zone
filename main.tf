@@ -21,40 +21,10 @@ data "azuread_group" "client_admin" {
 }
 
 # -----------------------------------------------------------------------------
-# Core Foundation Module: Management Groups & Policy Compliance
-# -----------------------------------------------------------------------------
-module "governance" {
-  source = "./modules/governance"
-
-  client_name                = var.client_name
-  client_display_name        = var.client_display_name
-  management_group_parent_id = var.management_group_parent_id
-  policy_enforcement_mode    = var.policy_enforcement_mode
-  allowed_vm_skus            = var.allowed_vm_skus
-  
-  # Aligned parameters to match child variables exactly
-  environment                = var.environment
-  management_group_name      = format("mg-%s-%s", var.client_name, var.environment)
-  client_subscription_id     = var.client_subscription_id
-  primary_location           = var.location
-  secondary_location         = "eastus2" # Paired regional safety fallback
-
-  # Entra ID Mappings
-  msp_platform_team_group_id = data.azuread_group.msp_platform_team.id
-  msp_security_team_group_id = data.azuread_group.msp_security_team.id
-  client_admin_group_id      = data.azuread_group.client_admin.id
-
-  providers = {
-    azurerm = azurerm.management
-  }
-}
-
-# -----------------------------------------------------------------------------
 # Operational Core Module: Central Monitoring & SIEM Engineering
 # -----------------------------------------------------------------------------
 module "monitoring" {
-  source     = "./modules/monitoring"
-  depends_on = [module.governance]
+  source = "./modules/monitoring"
 
   client_name     = var.client_name
   environment     = var.environment
@@ -68,11 +38,42 @@ module "monitoring" {
 }
 
 # -----------------------------------------------------------------------------
+# Core Foundation Module: Management Groups & Policy Compliance
+# -----------------------------------------------------------------------------
+module "governance" {
+  source     = "./modules/governance"
+  depends_on = [module.monitoring]
+
+  client_name                = var.client_name
+  client_display_name        = var.client_display_name
+  management_group_parent_id = var.management_group_parent_id
+  policy_enforcement_mode    = var.policy_enforcement_mode
+  allowed_vm_skus            = var.allowed_vm_skus
+  
+  # Map variables to match child module constraints exactly
+  environment                = var.environment
+  management_group_name      = format("mg-%s-%s", var.client_name, var.environment)
+  client_subscription_id     = var.client_subscription_id
+  primary_location           = var.location
+  secondary_location         = "eastus2"
+  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
+
+  # Entra ID Mappings
+  msp_platform_team_group_id = data.azuread_group.msp_platform_team.id
+  msp_security_team_group_id = data.azuread_group.msp_security_team.id
+  client_admin_group_id      = data.azuread_group.client_admin.id
+
+  providers = {
+    azurerm = azurerm.management
+  }
+}
+
+# -----------------------------------------------------------------------------
 # Connectivity Fabric Modules: Shared Hub & Isolated Spoke VNets
 # -----------------------------------------------------------------------------
 module "hub_networking" {
   source     = "./modules/networking"
-  depends_on = [module.monitoring]
+  depends_on = [module.governance]
 
   mode                    = "hub"
   client_name             = var.client_name
