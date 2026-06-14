@@ -31,7 +31,12 @@ module "governance" {
   management_group_parent_id = var.management_group_parent_id
   policy_enforcement_mode    = var.policy_enforcement_mode
   allowed_vm_skus            = var.allowed_vm_skus
-  allowed_regions            = var.allowed_regions
+  
+  # Parameters mapped to match child governance variables
+  environment                = var.environment
+  management_group_name      = format("mg-%s-%s", var.client_name, var.environment)
+  client_subscription_id     = var.client_subscription_id
+  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
 
   # Entra ID Mappings
   msp_platform_team_group_id = data.azuread_group.msp_platform_team.id
@@ -86,8 +91,6 @@ module "spoke_networking" {
   depends_on = [module.hub_networking]
 
   mode                     = "spoke"
-  client_name              = var.client_name
-  environment              = var.environment
   location                 = var.location
   address_space            = var.spoke_vnet_config.address_space
   workload_subnet_prefix   = var.spoke_vnet_config.workload_subnet_prefix
@@ -95,6 +98,11 @@ module "spoke_networking" {
   appgw_subnet_prefix      = var.spoke_vnet_config.appgw_subnet_prefix
   hub_vnet_id              = module.hub_networking.vnet_id
   hub_firewall_private_ip  = module.hub_networking.firewall_private_ip
+
+  # Parameters mapped to match child networking variables
+  vnet_name                = format("%s-%s-spoke-vnet", var.client_name, var.environment)
+  resource_group_name      = local.rg_spoke_networking
+  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
 
   providers = {
     azurerm = azurerm.workload
