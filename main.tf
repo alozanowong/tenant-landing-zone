@@ -32,11 +32,12 @@ module "governance" {
   policy_enforcement_mode    = var.policy_enforcement_mode
   allowed_vm_skus            = var.allowed_vm_skus
   
-  # Parameters mapped to match child governance variables
+  # Aligned parameters to match child variables exactly
   environment                = var.environment
   management_group_name      = format("mg-%s-%s", var.client_name, var.environment)
   client_subscription_id     = var.client_subscription_id
-  log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
+  primary_location           = var.location
+  secondary_location         = "eastus2" # Paired regional safety fallback
 
   # Entra ID Mappings
   msp_platform_team_group_id = data.azuread_group.msp_platform_team.id
@@ -99,9 +100,8 @@ module "spoke_networking" {
   hub_vnet_id              = module.hub_networking.vnet_id
   hub_firewall_private_ip  = module.hub_networking.firewall_private_ip
 
-  # Parameters mapped to match child networking variables
-  vnet_name                = format("%s-%s-spoke-vnet", var.client_name, var.environment)
-  resource_group_name      = local.rg_spoke_networking
+  vnet_name                  = format("%s-%s-spoke-vnet", var.client_name, var.environment)
+  resource_group_name        = local.rg_spoke_networking
   log_analytics_workspace_id = module.monitoring.log_analytics_workspace_id
 
   providers = {
