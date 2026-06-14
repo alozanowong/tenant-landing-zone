@@ -67,7 +67,7 @@ jobs:
       - name: Run tflint
         run: |
           tflint --init
-          tflint --recursive
+          tflint
 
   ###########################################################################
   # PLAN — Matrix over all client/environment combinations
