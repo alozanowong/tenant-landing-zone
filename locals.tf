@@ -4,6 +4,7 @@
 ###############################################################################
 
 locals {
+  # tflint-ignore: terraform_unused_declarations
   ###########################################################################
   # Naming Convention: {prefix}-{client}-{env}-{resource_type}-{suffix}
   # Example: msp-acmecorp-prod-vnet-hub
@@ -58,3 +59,4 @@ locals {
   log_analytics_name    = "${local.name_prefix}-law"
   key_vault_name        = "${local.name_prefix}-kv"
 }
+
