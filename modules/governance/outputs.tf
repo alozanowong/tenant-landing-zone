@@ -21,3 +21,8 @@ output "policy_assignment_identity_principal_id" {
   value       = azurerm_management_group_policy_assignment.msp_baseline.identity[0].principal_id
   description = "Object ID of the system-assigned managed identity for policy remediation tasks."
 }
+
+output "activity_log_diagnostic_setting_id" {
+  value       = azurerm_monitor_diagnostic_setting.mg_activity_log.id
+  description = "Resource ID of the diagnostic setting forwarding MG activity logs to Log Analytics."
+}

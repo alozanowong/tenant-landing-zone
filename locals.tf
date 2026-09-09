@@ -36,28 +36,12 @@ locals {
   ###########################################################################
   rg_hub_networking   = "${local.name_prefix}-rg-hub-network"
   rg_spoke_networking = "${local.name_prefix}-rg-spoke-network"
-  rg_management       = "${local.name_prefix}-rg-management"
   rg_monitoring       = "${local.name_prefix}-rg-management" # Monitoring resources share management RG
-  rg_governance       = "${local.name_prefix}-rg-governance"
-  rg_identity         = "${local.name_prefix}-rg-identity"
 
-  ###########################################################################
-  # Network Resource Names
-  ###########################################################################
-  hub_vnet_name          = "${local.name_prefix}-vnet-hub"
-  spoke_vnet_name        = "${local.name_prefix}-vnet-spoke"
-  firewall_name          = "${local.name_prefix}-afw"
-  firewall_pip_name      = "${local.name_prefix}-pip-afw"
-  bastion_name           = "${local.name_prefix}-bas"
-  bastion_pip_name       = "${local.name_prefix}-pip-bas"
-  hub_route_table_name   = "${local.name_prefix}-rt-hub"
-  spoke_route_table_name = "${local.name_prefix}-rt-spoke"
+  firewall_name     = "${local.name_prefix}-afw"
+  firewall_pip_name = "${local.name_prefix}-pip-afw"
+  bastion_name      = "${local.name_prefix}-bas"
+  bastion_pip_name  = "${local.name_prefix}-pip-bas"
 
-  ###########################################################################
-  # Governance / Management Names
-  ###########################################################################
-  management_group_name = "mg-${var.client_name}-${var.environment}"
-  log_analytics_name    = "${local.name_prefix}-law"
-  key_vault_name        = "${local.name_prefix}-kv"
 }
 

@@ -2,10 +2,6 @@
 # modules/governance/variables.tf
 ###############################################################################
 
-variable "client_name" {
-  type        = string
-  description = "Short alphanumeric slug for the client."
-}
 
 variable "client_display_name" {
   type        = string
@@ -73,8 +69,3 @@ variable "client_admin_group_id" {
   description = "Object ID of the client's Azure AD admin group. Assigned Reader role for visibility."
 }
 
-variable "tags" {
-  type        = map(string)
-  description = "Tags to apply to all taggable governance resources."
-  default     = {}
-}

@@ -46,7 +46,6 @@ module "governance" {
   source     = "./modules/governance"
   depends_on = [module.monitoring]
 
-  client_name                = var.client_name
   client_display_name        = var.client_display_name
   management_group_parent_id = var.management_group_parent_id
   policy_enforcement_mode    = var.policy_enforcement_mode
@@ -63,7 +62,6 @@ module "governance" {
   msp_platform_team_group_id = data.azuread_group.msp_platform_team.id
   msp_security_team_group_id = data.azuread_group.msp_security_team.id
   client_admin_group_id      = data.azuread_group.client_admin.id
-  tags                       = local.mandatory_tags
 
   providers = {
     azurerm = azurerm.management
@@ -135,9 +133,7 @@ module "identity" {
   environment            = var.environment
   management_group_id    = module.governance.management_group_id
   spoke_vnet_id          = module.spoke_networking.vnet_id
-  location               = var.location
   client_subscription_id = var.client_subscription_id
-  tags                   = local.mandatory_tags
 
   providers = {
     azurerm = azurerm.workload

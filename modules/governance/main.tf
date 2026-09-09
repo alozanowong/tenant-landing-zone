@@ -446,3 +446,21 @@ resource "azurerm_role_assignment" "policy_remediation" {
   depends_on = [azurerm_management_group_policy_assignment.msp_baseline]
 }
 
+
+###############################################################################
+# DIAGNOSTIC SETTINGS — Forward Management Group Activity Log to Log Analytics
+###############################################################################
+
+resource "azurerm_monitor_diagnostic_setting" "mg_activity_log" {
+  name                       = "diag-${var.management_group_name}-activity"
+  target_resource_id         = azurerm_management_group.client.id
+  log_analytics_workspace_id = var.log_analytics_workspace_id
+
+  enabled_log {
+    category = "Administrative"
+  }
+
+  enabled_log {
+    category = "Policy"
+  }
+}

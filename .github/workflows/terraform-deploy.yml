@@ -36,14 +36,16 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Normalize & Check Line Endings
-        run: |
-          terraform fmt -recursive
-          terraform fmt -check main.tf
-          terraform fmt -check providers.tf
-          terraform fmt -check variables.tf
-          terraform fmt -check locals.tf
-          terraform fmt -check -recursive modules/
+      - name: Check Terraform Formatting
+        run: terraform fmt -check -recursive
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: latest
+
+      - name: Run TFLint
+        run: tflint --recursive
 
   plan:
     name: "Validate — ${{ matrix.client }}/${{ matrix.environment }}"

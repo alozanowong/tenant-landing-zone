@@ -27,19 +27,3 @@ variable "spoke_vnet_id" {
   description = "Resource ID of the client Spoke VNet for network-scoped RBAC."
 }
 
-variable "location" {
-  type        = string
-  description = "Azure region where identity resources will be deployed."
-}
-
-variable "tags" {
-  type        = map(string)
-  description = "Tags applied to all identity resources."
-  default     = {}
-}
-
-variable "_tags_deprecated" {
-  type        = map(string)
-  description = "Tags — passed through for any taggable identity resources."
-  default     = {}
-}
