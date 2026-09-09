@@ -51,7 +51,7 @@ resource "azurerm_policy_definition" "allowed_locations" {
   display_name = "[MSP] Allowed Azure Regions"
   description  = "Restricts resource deployment to MSP-approved Azure regions only. Resources in unapproved regions will be denied at ARM API level."
 
-  management_group_name = azurerm_management_group.client.name
+  management_group_id = azurerm_management_group.client.id
 
   metadata = jsonencode({
     category = "MSP Governance"
@@ -102,7 +102,7 @@ resource "azurerm_policy_definition" "require_tags" {
   display_name = "[MSP] Require Mandatory Tags on Resource Groups"
   description  = "Enforces that all resource groups carry the mandatory MSP tags: Environment, CostCenter, Owner, ManagedBy."
 
-  management_group_name = azurerm_management_group.client.name
+  management_group_id = azurerm_management_group.client.id
 
   metadata = jsonencode({
     category = "MSP Governance"
@@ -155,7 +155,7 @@ resource "azurerm_policy_definition" "deny_public_ip" {
   display_name = "[MSP] Deny Public IP Address Creation"
   description  = "Blocks creation of standalone Public IP addresses. All internet ingress must route through Azure Firewall or Application Gateway in the Hub. Exempt resource IDs (Firewall, Bastion PIPs) should be added to the notScopes at assignment time."
 
-  management_group_name = azurerm_management_group.client.name
+  management_group_id = azurerm_management_group.client.id
 
   metadata = jsonencode({
     category = "MSP Governance"
@@ -195,7 +195,7 @@ resource "azurerm_policy_definition" "allowed_vm_skus" {
   display_name = "[MSP] Allowed Virtual Machine SKUs"
   description  = "Restricts VM deployments to a pre-approved list of SKUs to control cost and ensure client SLA alignment."
 
-  management_group_name = azurerm_management_group.client.name
+  management_group_id = azurerm_management_group.client.id
 
   metadata = jsonencode({
     category = "MSP Governance"
@@ -253,7 +253,7 @@ resource "azurerm_policy_definition" "enable_defender" {
   display_name = "[MSP] Enable Microsoft Defender for Cloud — Standard"
   description  = "Ensures Microsoft Defender for Cloud Standard tier is enabled for key workload types on the client subscription."
 
-  management_group_name = azurerm_management_group.client.name
+  management_group_id = azurerm_management_group.client.id
 
   metadata = jsonencode({
     category = "MSP Governance"
@@ -324,7 +324,7 @@ resource "azurerm_policy_set_definition" "msp_baseline" {
   display_name = "[MSP] Baseline Landing Zone Guardrails"
   description  = "Bundled MSP governance initiative enforcing region restrictions, mandatory tagging, network security guardrails, approved VM SKUs, and Defender for Cloud."
 
-  management_group_name = azurerm_management_group.client.name
+  management_group_id = azurerm_management_group.client.id
 
   metadata = jsonencode({
     category = "MSP Governance"
@@ -392,7 +392,7 @@ resource "azurerm_management_group_policy_assignment" "msp_baseline" {
   name                 = "assign-msp-baseline"
   display_name         = "[MSP] Baseline Guardrails — ${var.client_display_name}"
   policy_definition_id = azurerm_policy_set_definition.msp_baseline.id
-  management_group_name = azurerm_management_group.client.name
+  management_group_id  = azurerm_management_group.client.id
   enforce              = var.policy_enforcement_mode == "Default" ? true : false
   description          = "Assigns the MSP Baseline Guardrail initiative to the ${var.client_display_name} Management Group. Enforced in production; audit-only in dev/staging."
 

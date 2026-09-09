@@ -59,10 +59,6 @@ jobs:
             environment: dev
           - client: client-a
             environment: prod
-          - client: client-b
-            environment: dev
-          - client: client-b
-            environment: prod
 
     env:
       ARM_CLIENT_ID:       ${{ secrets.ARM_CLIENT_ID }}
